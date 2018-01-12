@@ -185,7 +185,7 @@ function getSSHKeysToAdd(){
 	if [ ! -z "$1" ]; then
 		# inject group query
 		local SQLGroupsQuery=$(buildGroups $1)
-		local QUERY="$QUERY AND $SQLGroupsQuery"
+		local QUERY="$QUERY AND ( $SQLGroupsQuery )"
 	fi
 
 	IFS=$'\n'

@@ -59,7 +59,7 @@ function fingerprintKey(){
 	if [ "$HasingAlgo" = "" ]; then
 		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" )
 	else
-		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f <<< "$1" )
+		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" )
 	fi
 }
 

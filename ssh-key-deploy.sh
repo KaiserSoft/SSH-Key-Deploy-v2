@@ -64,7 +64,7 @@ function fingerprintKey(){
 		echo "$1" > "/tmp/ssh-key-deploy.tmp"
 		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" )
 	else
-		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f <<< "$1" )
+		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" )
 	fi
 }
 

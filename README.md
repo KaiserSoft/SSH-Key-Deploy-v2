@@ -2,7 +2,7 @@
 SSH Key Deploy Script
 =====================
 Author: Mirko Kaiser, http://www.KaiserSoft.net   
-Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy-v2/
+Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy-v2/    
 Copyright (C) 2018 Mirko Kaiser    
 First created in Germany on 2018-01-08    
 License: New BSD License
@@ -23,7 +23,7 @@ from authorized_keys.
 
 The idea is to host these files in a private git repository and have any servers pull from  
 the repository using personal access tokens and update the authorized_keys file automatically.
-Alternativly you may use a tool like Ansible to trigger updates on your servers manually (more secure).
+Alternatively you may use a tool like Ansible to trigger updates on your servers manually (more secure).
 
 An alternative version which does not use an SQlite3 database is available here: https://github.com/KaiserSoft/SSH-Key-Deploy/
 
@@ -52,7 +52,7 @@ Then run ssh-key-deploy.sh to update the authorized_keys file.
     
     
 # Command Examples #
-* add key in id_rsa.pub file and add it to the WebServers and Fireall group    
+* add key in id_rsa.pub file and add it to the WebServers and Firewall group    
 ./ssh-key-manage.sh -f id_rsa.pub -g 'WebServers,Firewall'
 
 * display overview of all keys using sha256 fingerprints    

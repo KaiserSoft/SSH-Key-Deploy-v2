@@ -13,8 +13,9 @@
 # First created in Germany on 2015-09-20
 # License: New BSD License
 
-# Usage
+# Usage displayed with --help or more find more examples in README.md
 #	./ssh-key-manage.sh --help
+#
 
 DB="SSHkeys.db"
 ProcessReturn=0
@@ -304,7 +305,7 @@ while true ; do
 				*) SSHGroupOption="$2" ; shift 2 ;;
 			esac ;;
 		--kid)
-			# groups for key
+			# key id passed
 			case "$2" in
 				*) SelectedKeyID="$2" ; shift 2 ;;
 			esac ;;

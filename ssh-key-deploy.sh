@@ -18,7 +18,7 @@
 # License: New BSD License
 #
 #
-# See README.md for database format or use ssh-key-manage.sh to create a new one
+# See README.md for database format or use 'ssh-key-manage.sh --new-db' to create a new one
 
 
 
@@ -245,7 +245,7 @@ function buildKeysGroup(){
 }
 
 
-# determins file paths after AUTHORIZED_KEYS has been set
+# determines file paths after AUTHORIZED_KEYS has been set
 function determinePaths(){
 	# determine path as it may be passed to the script 
 	AUTH_LEN=$(printf "$AUTHORIZED_KEYS" |  awk -F"/" '{ print $NF }' | wc -m)
@@ -284,7 +284,6 @@ function deleteAuthFile(){
 
 function createAuthFile(){
 	if [ -f $AUTHORIZED_KEYS ]; then
-		# file already exists
 		return 0
 	fi
 
@@ -335,7 +334,7 @@ while true ; do
 		--sha256)
 			if [ $SSHVersion = 6 ]; then printf "WARN: --sha256 requires OpenSSL version 7 or greater\n"; else HasingAlgo="sha256"; fi ; shift ;;
 		--force)
-			# force use fresh AUTHORIZED_KEYS file
+			# force use of fresh AUTHORIZED_KEYS file
 			AUTHORIZED_KEYS_FORCE=1 ; shift ;;
 		--help)
 			showHelp ; exit 0 ;;
@@ -354,7 +353,7 @@ if [ ! -z "$AUTHORIZED_KEYS_CUSTOM" ]; then
 fi
 
 
-# ensure path for authorized keys file exist
+# ensure path for authorized_keys file exist
 validateAuthFilePath
 
 
@@ -363,7 +362,7 @@ if [ $AUTHORIZED_KEYS_FORCE = 1 ]; then
 	deleteAuthFile
 	createAuthFile
 else
-	#ensure authorized file exists
+	#ensure authorized_keys file exists
 	createAuthFile
 fi
 

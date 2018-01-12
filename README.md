@@ -104,6 +104,6 @@ You may create a fresh database with ssh-key-manage.sh --new-db
  	CREATE TABLE sshgroups(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		id_sshkey INTEGER NOT NULL,
-       KeyGroup TEXT NOT NULL );
+		KeyGroup TEXT NOT NULL );
 
 

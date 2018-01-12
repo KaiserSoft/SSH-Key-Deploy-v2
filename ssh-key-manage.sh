@@ -3,8 +3,12 @@
 # script to manage ssh keys in database
 #
 # Author: Mirko Kaiser, http://www.KaiserSoft.net
-# Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy/
-# Support the software with Bitcoins !thank you!: 157Gh2dTCkrip8hqj3TKqzWiezHXTPqNrV
+# Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy-v2/
+#
+# Support the software with Bitcoins !thank you!: 	 19wNLGAGfBzSpWiqShBZdJ2FsEcMzvLVLt
+#
+# Support the software with Bitcoin Cash !thank you!:  12B6uJgCmU73VTRRvtkfzB2zrXVjetcFt9
+#
 # Copyright (C) 2015 Mirko Kaiser
 # First created in Germany on 2015-09-20
 # License: New BSD License
@@ -13,12 +17,11 @@
 #	./ssh-key-manage.sh --help
 
 DB="SSHkeys.db"
-QUERY="SELECT sshkey from sshkeys,sshgroups WHERE sshkeys.enabled = 1 AND sshkeys.id = sshgroups.id_sshkey AND sshgroups.group LIKE "
-ProcessReturn=0 #global variable
+ProcessReturn=0
 KeyState=1 # 0 = add key disabled, 1 = add key enabled (default)
 KeyStateChange=0 # used to detect a possible change from enabled to disabled or vice versa
 SSHGroupOption="" # holds groups for the key
-HasingAlgo="sha256"
+HasingAlgo="sha256" # only for OpenSSH 7 and maybe later
 ShowSSHKeyOverview=0 # true if the overview should be build
 GroupList="" # used to show groups after adding or for overview
 KeyDelete=0 # 1 if key should be deleted from database

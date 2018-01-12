@@ -7,8 +7,12 @@
 #	  ./ssh-key-deploy.sh --help
 #
 # Author: Mirko Kaiser, http://www.KaiserSoft.net
-# Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy/
-# Support the software with Bitcoins !thank you!: 157Gh2dTCkrip8hqj3TKqzWiezHXTPqNrV
+# Project URL: https://github.com/KaiserSoft/SSH-Key-Deploy-v2/
+#
+# Support the software with Bitcoins !thank you!: 	 19wNLGAGfBzSpWiqShBZdJ2FsEcMzvLVLt
+#
+# Support the software with Bitcoin Cash !thank you!:  12B6uJgCmU73VTRRvtkfzB2zrXVjetcFt9
+#
 # Copyright (C) 2015 Mirko Kaiser
 # First created in Germany on 2015-09-20
 # License: New BSD License

@@ -88,6 +88,9 @@ Then run ssh-key-deploy.sh to update the authorized_keys file.
 * write all enabled keys to the file specified with -f    
 ./ssh-key-deploy.sh -f /etc/ssh/authorized_keys/root
 
+* write all enabled keys to the file specified with -f and change owner to pi and group to users    
+./ssh-key-deploy.sh -f /home/pi/.ssh/authorized_keys -o pi:users
+
    
    
    

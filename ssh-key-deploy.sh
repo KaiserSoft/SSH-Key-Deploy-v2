@@ -34,6 +34,7 @@ KeysRemovedCnt=0
 MsgVerbose=0 # 0=print everything, 1=only error and file changes, 2=only errors
 HasingAlgo="sha256"
 FingerPrint="" # will contain an SSH finger print
+ChownOption="" #holds "owner" option for Linux "chown" command
 if [ $(ssh -V 2>&1 | cut -c9-9) -lt 7 ]; then SSHVersion=6; HasingAlgo=""; else SSHVersion=7; fi
 sqlite3 --version > /dev/null 2>&1 || { printf "ERROR: SQlite3 is not installed or not in path!\n"; exit 1; }
 
@@ -44,7 +45,8 @@ function showHelp(){
 	printf "OPTIONS include:\n"
 	printf "  -d FILENAME\t use custom database file '/some/path/foo.db'\n"
 	printf "  -f FILENAME\t use custom authorized_keys file '/some/path/authorized_keys'\n"
-	printf "  -g GROUP\t comma separated list of groups 'foo,bar'\n"
+	printf "  -g GROUP\t comma separated list of SSH groups 'foo,bar'\n"
+	printf "  -o USER:GROUP\t optional \"chown\" of authorized_keys file to system user:group\n"
 	printf "  -q\t\t only show file changes and error messages\n"
 	printf "  -qq\t\t only show error messages\n"
 	printf "  --force\t delete authorized keys file before adding keys\n"
@@ -266,6 +268,9 @@ function validateAuthFilePath(){
 			exit 99
 		fi
 		chmod 0700 "$STR_PATH"
+		if [ ! -z "$ChownOption" ]; then
+			chown "$ChownOption" "$STR_PATH"
+		fi
 	fi
 }
 
@@ -298,11 +303,19 @@ function createAuthFile(){
 		printf "ERROR: unable to set file permissions\n\n"
 		exit 1
 	fi
+	
+	if [ ! -z "$ChownOption" ]; then
+		chown "$ChownOption" "$STR_PATH"
+	fi
+	if [ $? -ne 0 ]; then
+		printf "ERROR: unable to set new owner\n\n"
+		exit 1
+	fi
 }
 
 
 # parse script options
-TEMPOPTS=$(getopt -o f:g:q::d: --long md5,sha256,force,help -n 'ssh-key-deploy.sh' -- "$@")
+TEMPOPTS=$(getopt -o o:f:g:q::d: --long md5,sha256,force,help -n 'ssh-key-deploy.sh' -- "$@")
 if [ $? -ne 0 ]; then showHelp ; exit 1 ; fi
 
 eval set -- "$TEMPOPTS"
@@ -311,12 +324,28 @@ while true ; do
 		-f)
 			# custom AUTHORIZED_KEYS file
 			case "$2" in
-				*) AUTHORIZED_KEYS_CUSTOM=$(readlink -f "$2") ; shift 2 ;;
+				*) AUTHORIZED_KEYS_CUSTOM=$(readlink -f "$2")
+					if [ -z "$AUTHORIZED_KEYS_CUSTOM" ]; then
+						# file does not exist yet - this is a quick hack and will fail if relative
+						# path is provided. Will have to look into it when I have time
+						AUTHORIZED_KEYS="$2"
+						validateAuthFilePath
+						AUTHORIZED_KEYS=""
+						AUTHORIZED_KEYS_CUSTOM=$(readlink -f "$2")
+					fi
+					shift 2 ;;
+					
+					
 			esac ;;
 		-g)
 			# limit to specific groups
 			case "$2" in
 				*) GroupOptions=$2 ; shift 2 ;;
+			esac ;;
+		-o)
+			# option for "chown" command -change owner when deploying key file as root
+			case "$2" in
+				*) ChownOption=$2 ; shift 2;;
 			esac ;;
 		-d)
 			# custom db file
@@ -399,5 +428,15 @@ else
 	removeKeysDisabled
 fi
 
+
+# set permissions last to ensure correct permissions
+if [ ! -z "$ChownOption" ]; then
+	chown "$ChownOption" $AUTHORIZED_KEYS
+	chmod 600 $AUTHORIZED_KEYS
+fi
+if [ $? -ne 0 ]; then
+	printf "ERROR: Unable to change owner of authorized keys file\n"
+	exit 99
+fi
 
 exit 0

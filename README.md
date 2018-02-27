@@ -32,7 +32,7 @@ An alternative version which does not use an SQlite3 database is available here:
 * Linux - tested on Debian 8 and 9
 * bash shell
 * sqlite3
-* OpenSSH 6 and 7 but version 7 is recommended
+* OpenSSH 6 or 7 but version 7 is recommended
 
 
 # Example #

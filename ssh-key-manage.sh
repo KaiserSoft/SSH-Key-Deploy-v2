@@ -39,7 +39,7 @@ function showHelp(){
 	printf "Usage: ssh-key-manage.sh [OPTIONS]\n"
 	printf "OPTIONS include:\n"
 	printf "  -d FILENAME\t use custom database file '/some/path/foo.db'\n"
-	printf "  -f FILENAME\t use custom authorized_keys file '/some/path/authorized_keys'\n"
+	printf "  -f FILENAME\t name of file containing id_rsa.pub key\n"
 	printf "  -g GROUP\t comma separated list of groups. Prepend with - to remove group membership 'foo,-bar'\n"
 	printf "  --kid ID\t specify key in database by ID. Get ID with --overview \n"
 	printf "  --delete\t delete key specified with -f or --kid\n"

@@ -58,9 +58,9 @@ function showHelp(){
 # creates a fingerprint from the SSH key
 function fingerprintKey(){
 	if [ "$HasingAlgo" = "" ]; then
-		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" )
+		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" 2> /dev/null )
 	else
-		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" )
+		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" 2> /dev/null )
 	fi
 }
 
@@ -90,6 +90,12 @@ function loadKeyFromFile(){
 	if [ ! -f "$1" ]; then
 		printf "ERROR: file not found - $1\n"
 		exit 1
+	fi
+	
+	fingerprintKey "$(cat $1)"
+	if [ $? -ne 0 ]; then
+		printf "ERROR: $1 is not a valid public key file.\n"
+		exit 99
 	fi
 
 	# read and split content by space

@@ -256,6 +256,13 @@ function updateSSHKeyState(){
 	fi
 }
 
+function feedbackDBempty(){
+	local QUERY="SELECT COUNT(*) FROM sshkeys"
+	IFS=$'\n'
+	local SSHKeyCount=($(sqlite3 -separator '|' $DB "$QUERY"))
+	echo $SSHKeyCount
+}
+
 
 # deletes the key and any group association from the database
 function deleteSSHKeys(){
@@ -288,8 +295,8 @@ function deleteSSHKeys(){
 # load arguments #
 ##################
 # parse script options
-if [ -z $1 ]; then showHelp ; exit 1; fi
-TEMPOPTS=$(getopt -o f:g:q::d: --long kid:,delete,overview,disabled,enabled,md5,sha256,new-db,force,help -n 'test.sh' -- "$@")
+if [ -z $1 ]; then ShowSSHKeyOverview=1; fi
+TEMPOPTS=$(getopt -o f:g:q::d:o --long kid:,delete,overview,disabled,enabled,md5,sha256,new-db,force,help -n 'test.sh' -- "$@")
 if [ $? -ne 0 ]; then showHelp ; exit 1 ; fi
 
 eval set -- "$TEMPOPTS"
@@ -298,7 +305,12 @@ while true ; do
 		-d)
 			# custom db file
 			case "$2" in
-				*) DB=$2 ; shift 2 ;;
+				*) DB=$2 ; 
+				if [ $# -eq 3 ]; then
+					# no more args, show overview
+					ShowSSHKeyOverview=1
+				fi
+				shift 2 ;;
 			esac;;
 		-f)
 			# key file to add
@@ -315,6 +327,8 @@ while true ; do
 			case "$2" in
 				*) SelectedKeyID="$2" ; shift 2 ;;
 			esac ;;
+		-o)
+			ShowSSHKeyOverview=1 ; shift ;;
 		--overview)
 			ShowSSHKeyOverview=1 ; shift ;;
 		--enabled)
@@ -339,11 +353,24 @@ done
 # create fresh database
 if [ $CreateNewDB -eq 1 ]; then createNewDB; fi
 
+# ensure DB exists
+if [ ! -f "$DB" ]; then
+	printf "ERROR: database file not found! ${DB}\n"
+	printf "Please specify the correct location using -d or create a fresh database using --new-db\n"
+	exit 99
+fi
+
+
 # generate key and group overview
 if [ $ShowSSHKeyOverview -eq 1 ]; then
-	showKeyGroupOverview
+	if [ $(feedbackDBempty) -eq 0 ]; then
+		printf "INFO: fresh DB detected. Please add keys first or try --help for a list of options\n"
+	else
+		showKeyGroupOverview
+	fi
 	exit 0
 fi
+
 
 # hack for now since this was an after thought. everything in here works using the actual SSHKey string
 # will now load the SSHKey from db to allow key modification with the key DB id, as shown by --overview

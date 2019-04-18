@@ -19,7 +19,7 @@
 #
 #
 # See README.md for database format or use 'ssh-key-manage.sh --new-db' to create a new one
-
+PS4='${LINENO} ' # print line numbers when debugging
 
 
 
@@ -63,10 +63,9 @@ function showHelp(){
 # creates a fingerprint from the SSH key
 function fingerprintKey(){
 	if [ "$HasingAlgo" = "" ]; then
-		echo "$1" > "/tmp/ssh-key-deploy.tmp"
-		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" )
+		FingerPrint=$( ssh-keygen -l -f /dev/stdin <<< "$1" 2> /dev/null)
 	else
-		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" )
+		FingerPrint=$(ssh-keygen -E $HasingAlgo -l -f - <<< "$1" 2> /dev/null)
 	fi
 }
 
@@ -161,7 +160,7 @@ function removeKeysDisabled(){
 	done
 	
 	if [ $KeysRemovedCnt -eq 0 ] && [ $MsgVerbose -eq 0 ]; then
-		printf "INFO: no disabled keys need to be removed from authorized_keys.\n"
+		printf "INFO: no disabled keys need to be removed from ${AUTHORIZED_KEYS}.\n"
 	fi
 }
 
@@ -176,7 +175,7 @@ function removeKeysNotInGroup(){
 	done
 	
 	if [ $KeysRemovedCnt -eq 0 ] && [ $MsgVerbose -eq 0 ]; then
-		printf "INFO: no keys need to be removed from authorized_keys.\n"
+		printf "INFO: no keys need to be removed from ${AUTHORIZED_KEYS}.\n"
 	fi
 }
 
@@ -229,7 +228,7 @@ function buildAllKeys(){
 	done
 	
 	if [ $KeysAddedCnt -eq 0 ] && [ $MsgVerbose -eq 0 ]; then
-		printf "INFO: no new keys for authorized_keys.\n"
+		printf "INFO: no new keys for ${AUTHORIZED_KEYS}.\n"
 	fi
 }
 
@@ -242,7 +241,7 @@ function buildKeysGroup(){
 	done
 	
 	if [ $KeysAddedCnt -eq 0 ] && [ $MsgVerbose -eq 0 ]; then
-		printf "INFO: no new keys for authorized_keys.\n"
+		printf "INFO: no new keys for ${AUTHORIZED_KEYS}.\n"
 	fi
 }
 
@@ -288,11 +287,11 @@ function deleteAuthFile(){
 }
 
 function createAuthFile(){
-	if [ -f $AUTHORIZED_KEYS ]; then
+	if [ -f "$AUTHORIZED_KEYS" ]; then
 		return 0
 	fi
 
-	RET=$(touch $AUTHORIZED_KEYS 2>&1)
+	RET=$(touch "$AUTHORIZED_KEYS" 2>&1)
 	if [ $? -ne 0 ]; then
 		printf "ERROR: creating empty file: $RET\n\n"
 		exit 1
@@ -317,6 +316,8 @@ function createAuthFile(){
 # parse script options
 TEMPOPTS=$(getopt -o o:f:g:q::d: --long md5,sha256,force,help -n 'ssh-key-deploy.sh' -- "$@")
 if [ $? -ne 0 ]; then showHelp ; exit 1 ; fi
+if [ -z "$1"  ]; then showHelp ; exit 1 ; fi
+
 
 eval set -- "$TEMPOPTS"
 while true ; do
@@ -324,18 +325,7 @@ while true ; do
 		-f)
 			# custom AUTHORIZED_KEYS file
 			case "$2" in
-				*) AUTHORIZED_KEYS_CUSTOM=$(readlink -f "$2")
-					if [ -z "$AUTHORIZED_KEYS_CUSTOM" ]; then
-						# file does not exist yet - this is a quick hack and will fail if relative
-						# path is provided. Will have to look into it when I have time
-						AUTHORIZED_KEYS="$2"
-						validateAuthFilePath
-						AUTHORIZED_KEYS=""
-						AUTHORIZED_KEYS_CUSTOM=$(readlink -f "$2")
-					fi
-					shift 2 ;;
-					
-					
+				*) AUTHORIZED_KEYS_CUSTOM="${2/#\~/$HOME}" ; shift 2 ;;
 			esac ;;
 		-g)
 			# limit to specific groups

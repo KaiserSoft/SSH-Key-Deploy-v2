@@ -52,14 +52,17 @@ Then run ssh-key-deploy.sh to update the authorized_keys file.
     
     
 # Command Examples #
-* add key in id_rsa.pub file and add it to the WebServers and Firewall group    
+* show all command options    
+./ssh-key-manage.sh --help
+
+* add SSH key in id_rsa.pub to database if not already in and join the WebServers and Firewall group    
 ./ssh-key-manage.sh -f id_rsa.pub -g 'WebServers,Firewall'
 
 * display overview of all keys using sha256 fingerprints    
-./ssh-key-manage.sh --overview
+./ssh-key-manage.sh
 
 * display overview of all keys using md5 fingerprints   
-./ssh-key-manage.sh --overview --md5
+./ssh-key-manage.sh --md5
 
 * disable the key in id_rsa.pub    
 ./ssh-key-manage.sh -f id_rsa.pub --disable
@@ -75,15 +78,16 @@ Then run ssh-key-deploy.sh to update the authorized_keys file.
 
 * create a fresh database with default database name (SSHkeys.db)    
 ./ssh-key-manage.sh --new-db
+    
+	
+* show all command options  
+./ssh-key-deploy.sh --help
 
 * write keys in group 'Firewall' to current users authorized_keys file. Hide INFO messages (-q)    
 ./ssh-key-deploy.sh -g 'Firewall' -q
 
 * write keys in group 'Firewall' to current users authorized_keys file. Delete file first to ensure it only contains keys from the database    
 ./ssh-key-deploy.sh -g 'Firewall' --force
-
-* write all enabled keys to current users authorized_keys file    
-./ssh-key-deploy.sh
 
 * write all enabled keys to the file specified with -f    
 ./ssh-key-deploy.sh -f /etc/ssh/authorized_keys/root
